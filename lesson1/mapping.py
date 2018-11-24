@@ -1,4 +1,5 @@
 import networkx
+import matplotlib.pyplot as plt
 
 BJ = 'Beijing'
 SZ = 'Shenzhen'
@@ -20,6 +21,7 @@ air_route = {
 }
 air_route = networkx.Graph(air_route)
 networkx.draw(air_route, with_labels=True)
+plt.show()
 
 def search_desitination(graph, start, destination):
     pathes = [[start]]

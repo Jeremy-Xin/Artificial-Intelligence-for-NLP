@@ -9,8 +9,6 @@ inputs = [
 	'forget it-- I was wondering how general the program is',
 	'I feel like it',
 	'I feel this is enough',
-	'Shit',
-	'WTF',
 	'I want my mother give me some money',
 ]
 
