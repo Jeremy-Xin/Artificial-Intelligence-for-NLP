@@ -60,7 +60,7 @@ def search(graph, start, dest, strategy_func):
 
         pathes = sorted(pathes, key=lambda p: strategy_func(p, dest))
         seen.add(frontier)
-    return []
+    return [], None
 
 def search_pruning(graph, start, dest, strategy_func):
     pathes = [[start]]
@@ -90,9 +90,9 @@ def search_pruning(graph, start, dest, strategy_func):
                     chosen_cost = strategy_func(new_path, dest)
 
         pathes = sorted(pathes, key=lambda p: strategy_func(p, dest))
-        # seen.add(frontier)
-    return chosen[-1], strategy_func(chosen[-1], dest)
-
+    if chosen:
+        return chosen[-1], strategy_func(chosen[-1], dest)
+    return [], None
 
 def is_goal(start, dest):
     return start == dest
@@ -121,10 +121,13 @@ def interchange_cost(pathes, dest):
         cur = new_station
     return interchange
 
-
 def time_cost(pathes, dest):
     # 假设距离50耗时一分钟 换乘时间三分钟
     return min_distance_cost(pathes, dest) / 50 + interchange_cost(pathes, dest) * 3
+
+def min_station_cost(pathes, dest):
+    # 预估站数，按照一站100距离计算
+    return len(pathes) + distances[pathes[-1], dest] / 100
 
 def check_same_line(st1, st2):
     if (st1,st2) in intersects:
@@ -183,13 +186,12 @@ def print_path(path):
 min_distance_search = partial(search, strategy_func=min_distance_cost)
 least_interchange_search = partial(search, strategy_func=interchange_cost)
 least_time_search = partial(search, strategy_func=time_cost)
+min_station_search = partial(search, strategy_func=min_station_cost)
 
 min_distance_search_pruning = partial(search_pruning, strategy_func=min_distance_cost)
 least_interchange_search_pruning = partial(search_pruning, strategy_func=interchange_cost)
 least_time_search_pruning = partial(search_pruning, strategy_func=time_cost)
-
-# path, cost = least_time_search(graph, '西直门', '公主坟')
-# path2, cost2 = least_time_search_pruning(graph, '西直门', '公主坟')
+min_station_search_pruning = partial(search_pruning, strategy_func=min_station_cost)
 
 # path, cost = min_distance_search(graph, '西局', '望京')
 # path2, cost2 = min_distance_search_pruning(graph, '西局', '望京')
@@ -200,11 +202,23 @@ least_time_search_pruning = partial(search_pruning, strategy_func=time_cost)
 # path, cost = least_time_search(graph, '西局', '望京')
 # path2, cost2 = least_time_search_pruning(graph, '西局', '望京')
 
+# path, cost = min_station_search(graph, '西局', '望京')
+# path2, cost2 = min_station_search_pruning(graph, '西局', '望京')
+
+# path, cost = least_time_search(graph, '西直门', '公主坟')
+# path2, cost2 = least_time_search_pruning(graph, '西直门', '公主坟')
+
 # path, cost = least_time_search(graph, '郭公庄', '立水桥')
 # path2, cost2 = least_time_search_pruning(graph, '郭公庄', '立水桥')
 
-path, cost = least_time_search(graph, '昌平', '十里河')
-path2, cost2 = least_time_search_pruning(graph, '昌平', '十里河')
+# path, cost = least_time_search(graph, '昌平', '十里河')
+# path2, cost2 = least_time_search_pruning(graph, '昌平', '十里河')
+
+path, cost = min_station_search(graph, '燕山', '潞城')
+path2, cost2 = min_station_search_pruning(graph, '燕山', '潞城')
+
+# path, cost = min_station_search(graph, '金安桥', '古城')
+# path2, cost2 = min_station_search_pruning(graph, '金安桥', '古城')
 
 print_path(get_path(path))
 print('路径代价：', cost)
